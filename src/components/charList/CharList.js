@@ -45,7 +45,11 @@ class CharList extends Component {
         imageObjectFit = { objectFit: "cover" };
       }
       return (
-        <li key={char.id} className="char__item">
+        <li
+          key={char.id}
+          onClick={() => this.props.onSelectedChar(char.id)}
+          className="char__item"
+        >
           <img
             src={char.thumbnail}
             alt={char.thumbnail}

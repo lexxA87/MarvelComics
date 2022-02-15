@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import useMarvelService from "../../services/MarvelService";
-import PropTypes from "prop-types";
+
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import Spinner from "../spinner/Spinner";
 import "./comicsList.scss";
 
-const ComicsList = (props) => {
+const ComicsList = () => {
   const [comics, setComics] = useState([]);
   const [offset, setOffset] = useState(100);
   const [newItemLoading, setNewItemLoading] = useState(false);
@@ -37,12 +38,8 @@ const ComicsList = (props) => {
   function renderItems(arr) {
     const comicsList = arr.map((comic, i) => {
       return (
-        <li
-          key={i}
-          className="comics__item"
-          onClick={() => props.onSelectedComic(comic.id)}
-        >
-          <a href="#">
+        <li key={i} className="comics__item">
+          <Link to={`/comics/${comic.id}`}>
             <img
               src={comic.thumbnail}
               alt={comic.title}
@@ -50,7 +47,7 @@ const ComicsList = (props) => {
             />
             <div className="comics__item-name">{comic.title}</div>
             <div className="comics__item-price">{comic.price}$</div>
-          </a>
+          </Link>
         </li>
       );
     });
@@ -76,10 +73,6 @@ const ComicsList = (props) => {
       </button>
     </div>
   );
-};
-
-ComicsList.propTypes = {
-  onSelectedComic: PropTypes.func.isRequired,
 };
 
 export default ComicsList;

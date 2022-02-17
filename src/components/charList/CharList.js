@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 import PropTypes from "prop-types";
 import ErrorMessage from "../errorMessage/ErrorMessage";
@@ -57,32 +58,37 @@ const CharList = (props) => {
         imageObjectFit = { objectFit: "cover" };
       }
       return (
-        <li
-          key={char.id}
-          tabIndex={0}
-          ref={(el) => (itemRefs.current[i] = el)}
-          onClick={() => {
-            props.onSelectedChar(char.id);
-            focusOnItem(i);
-          }}
-          onKeyPress={(e) => {
-            if (e.key === " " || e.key === "Enter") {
+        <CSSTransition key={char.id} timeout={500} classNames="char__item">
+          <li
+            tabIndex={0}
+            ref={(el) => (itemRefs.current[i] = el)}
+            onClick={() => {
               props.onSelectedChar(char.id);
               focusOnItem(i);
-            }
-          }}
-          className="char__item"
-        >
-          <img
-            src={char.thumbnail}
-            alt={char.thumbnail}
-            style={imageObjectFit}
-          />
-          <div className="char__name">{char.name}</div>
-        </li>
+            }}
+            onKeyPress={(e) => {
+              if (e.key === " " || e.key === "Enter") {
+                props.onSelectedChar(char.id);
+                focusOnItem(i);
+              }
+            }}
+            className="char__item"
+          >
+            <img
+              src={char.thumbnail}
+              alt={char.thumbnail}
+              style={imageObjectFit}
+            />
+            <div className="char__name">{char.name}</div>
+          </li>
+        </CSSTransition>
       );
     });
-    return <ul className="char__grid">{charsList}</ul>;
+    return (
+      <ul className="char__grid">
+        <TransitionGroup component={null}>{charsList}</TransitionGroup>
+      </ul>
+    );
   }
 
   const items = renderItems(chars);

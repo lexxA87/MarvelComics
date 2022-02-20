@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 import PropTypes from "prop-types";
@@ -36,8 +36,7 @@ const CharList = (props) => {
     onRequest(offset, true);
   }, []);
 
-  const {getAllCharacters, process, setProcess } =
-    useMarvelService();
+  const { getAllCharacters, process, setProcess } = useMarvelService();
 
   const onCharsLoaded = (newChars) => {
     let ended = false;
@@ -113,9 +112,13 @@ const CharList = (props) => {
     );
   }
 
+  const elements = useMemo(() => {
+    return setContent(process, () => renderItems(chars), newItemLoading);
+  }, [process]);
+
   return (
     <div className="char__list">
-      {setContent(process, () => renderItems(chars), newItemLoading)}
+      {elements}
 
       <button
         style={{ display: charsEnded ? "none" : "block" }}

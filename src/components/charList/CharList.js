@@ -7,6 +7,25 @@ import Spinner from "../spinner/Spinner";
 import useMarvelService from "../../services/MarvelService";
 import "./charList.scss";
 
+const setContent = (process, Component, newItemLoading) => {
+  switch (process) {
+    case "loading":
+      return newItemLoading ? <Component /> : <Spinner />;
+
+    case "waiting":
+      return <Spinner />;
+
+    case "confirmed":
+      return <Component />;
+
+    case "error":
+      return <ErrorMessage />;
+
+    default:
+      throw new Error("Process not found");
+  }
+};
+
 const CharList = (props) => {
   const [chars, setChars] = useState([]);
   const [offset, setOffset] = useState(210);
@@ -17,7 +36,8 @@ const CharList = (props) => {
     onRequest(offset, true);
   }, []);
 
-  const { loading, error, getAllCharacters } = useMarvelService();
+  const {getAllCharacters, process, setProcess } =
+    useMarvelService();
 
   const onCharsLoaded = (newChars) => {
     let ended = false;
@@ -33,7 +53,9 @@ const CharList = (props) => {
   const onRequest = (offset, initial) => {
     initial ? setNewItemLoading(false) : setNewItemLoading(true);
 
-    getAllCharacters(offset).then(onCharsLoaded);
+    getAllCharacters(offset)
+      .then(onCharsLoaded)
+      .then(() => setProcess("confirmed"));
   };
 
   const itemRefs = useRef([]);
@@ -91,15 +113,9 @@ const CharList = (props) => {
     );
   }
 
-  const items = renderItems(chars);
-  const errorMessage = error ? <ErrorMessage /> : null;
-  const spinner = loading && !newItemLoading ? <Spinner /> : null;
-
   return (
     <div className="char__list">
-      {errorMessage}
-      {spinner}
-      {items}
+      {setContent(process, () => renderItems(chars), newItemLoading)}
 
       <button
         style={{ display: charsEnded ? "none" : "block" }}
